@@ -1,0 +1,160 @@
+:root {
+  --font-kr: "NanumSquareRound", "Apple SD Gothic Neo", system-ui, sans-serif;
+  --bg: #1A1828;
+  --accent: #C9B8FF;
+  --warm: #FFD6A5;
+  --text: #E8E4F0;
+  --text-muted: rgba(232,228,240,0.4);
+  --ease-soft: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body, #app {
+  width: 100%; height: 100%;
+  overscroll-behavior: none;
+}
+
+body {
+  font-family: var(--font-kr);
+  color: var(--text);
+  background: var(--bg);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+}
+
+#app { position: relative; overflow: hidden; }
+
+#stoneCanvas {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  display: block;
+}
+
+.top-brand {
+  position: absolute;
+  top: calc(env(safe-area-inset-top, 0) + 24px);
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--accent);
+  opacity: 0.35;
+  letter-spacing: 6px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.guide {
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 2000ms var(--ease-soft);
+}
+.guide.is-faded { opacity: 0; }
+.guide__text {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.comfort-toast {
+  position: absolute;
+  top: 18%;
+  left: 50%;
+  transform: translate(-50%, 0) scale(0.95);
+  pointer-events: none;
+  z-index: 24;
+  opacity: 0;
+  transition: opacity 800ms var(--ease-soft), transform 800ms var(--ease-soft);
+}
+.comfort-toast[data-show="true"] {
+  opacity: 1;
+  transform: translate(-50%, 0) scale(1);
+}
+.comfort-toast__text {
+  display: inline-block;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  background: rgba(45,43,61,0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 10px 22px;
+  border-radius: 999px;
+}
+
+.warmth-wrap {
+  position: absolute;
+  bottom: calc(env(safe-area-inset-bottom, 0) + 60px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 3px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 2px;
+  overflow: hidden;
+  z-index: 10;
+}
+.warmth-bar {
+  height: 100%;
+  width: 0%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--warm));
+  transition: width 500ms var(--ease-soft);
+}
+
+.privacy-link {
+  position: absolute;
+  bottom: calc(env(safe-area-inset-bottom, 0) + 16px);
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: inherit;
+  font-size: 10px;
+  color: rgba(232,228,240,0.15);
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.privacy-overlay {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 40; padding: 24px;
+  background: rgba(26,24,40,0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  opacity: 0; pointer-events: none;
+  transition: opacity 280ms var(--ease-soft);
+}
+.privacy-overlay[data-show="true"] { opacity: 1; pointer-events: auto; }
+.privacy-overlay[hidden] { display: none; }
+.privacy-overlay__card {
+  position: relative;
+  background: #2D2B3D;
+  border-radius: 24px;
+  padding: 32px 24px 24px;
+  width: min(420px, 92vw);
+  max-height: 80vh;
+  overflow-y: auto;
+  line-height: 1.7;
+}
+.privacy-overlay__card h2 { font-size: 20px; font-weight: 800; margin-bottom: 8px; }
+.privacy-overlay__card h3 { font-size: 15px; font-weight: 800; margin-top: 20px; margin-bottom: 6px; }
+.privacy-overlay__card p { font-size: 13px; margin-bottom: 8px; color: var(--text-muted); }
+.privacy-overlay__date { font-size: 12px; color: rgba(232,228,240,0.25); }
+.privacy-overlay__close {
+  position: absolute; top: 12px; right: 12px;
+  width: 36px; height: 36px;
+  border: none; border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  color: var(--text);
+  font-size: 20px; font-weight: 700;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}

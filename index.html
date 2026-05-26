@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
+    <meta name="theme-color" content="#1A1828" />
+    <meta name="color-scheme" content="light only" />
+    <meta name="supported-color-schemes" content="light only" />
+    <meta name="darkreader-lock" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="쓰담돌" />
+    <meta name="description" content="마음이 불안할 때, 돌을 문질러보세요." />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="stylesheet" href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-round.css" />
+    <link rel="stylesheet" href="/src/style.css" />
+    <title>쓰담돌</title>
+  </head>
+  <body>
+    <main id="app">
+      <!-- 돌 캔버스 -->
+      <canvas id="stoneCanvas"></canvas>
+
+      <!-- 상단 브랜드 -->
+      <div class="top-brand">쓰담돌</div>
+
+      <!-- 가이드 -->
+      <div class="guide" id="guide">
+        <p class="guide__text">천천히 문질러보세요</p>
+      </div>
+
+      <!-- 위로 메시지 -->
+      <div class="comfort-toast" id="comfortToast" data-show="false">
+        <span class="comfort-toast__text" id="comfortText"></span>
+      </div>
+
+      <!-- 온기 표시 (미니멀) -->
+      <div class="warmth-wrap" id="warmthWrap">
+        <div class="warmth-bar" id="warmthBar"></div>
+      </div>
+
+      <!-- 개인정보 -->
+      <button class="privacy-link" id="btnPrivacy">개인정보처리방침</button>
+      <section id="privacyOverlay" class="privacy-overlay" hidden data-show="false">
+        <div class="privacy-overlay__card">
+          <button id="btnPrivacyClose" class="privacy-overlay__close" aria-label="닫기">&times;</button>
+          <h2>개인정보처리방침</h2>
+          <p class="privacy-overlay__date">시행일: 2026년 5월 27일</p>
+          <h3>1. 수집하는 개인정보</h3>
+          <p>쓰담돌(Sseudamdol)은 <strong>개인정보를 수집하지 않습니다.</strong></p>
+          <h3>2. 데이터 저장</h3>
+          <p>사용 데이터는 사용자의 기기(LocalStorage)에만 저장되며, 외부 서버로 전송되지 않습니다.</p>
+          <h3>3. 제3자 제공</h3>
+          <p>수집하는 개인정보가 없으므로 제3자에게 제공하는 정보도 없습니다.</p>
+          <h3>4. 광고 및 분석</h3>
+          <p>쓰담돌은 광고 SDK, 분석 도구, 추적 기술을 사용하지 않습니다.</p>
+          <h3>5. 아동 보호</h3>
+          <p>쓰담돌은 전 연령 이용 가능하며, 아동의 개인정보를 수집하지 않습니다.</p>
+          <h3>6. 문의</h3>
+          <p>개인정보처리방침에 대한 문의: <strong>wooheezin@gmail.com</strong></p>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
