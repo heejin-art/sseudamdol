@@ -29,11 +29,20 @@ window.addEventListener("resize", resize);
 
 // ---------- 돌 파라미터 ----------
 const stoneW = Math.min(W * 0.65, 280);
-const stoneH = stoneW * 0.72;
+const stoneH = stoneW * 0.78;
 const cx = W / 2;
 const cy = H / 2;
-const indentRx = stoneW * 0.28;
-const indentRy = stoneH * 0.32;
+const indentRx = stoneW * 0.26;
+const indentRy = stoneH * 0.28;
+
+// ---------- 돌 이미지 로드 ----------
+// public/stone.png 파일을 넣으면 이미지로 표시됩니다.
+// 이미지가 없으면 기본 캔버스 돌이 그려집니다.
+const stoneImg = new Image();
+let stoneImgLoaded = false;
+stoneImg.onload = () => { stoneImgLoaded = true; };
+stoneImg.onerror = () => { stoneImgLoaded = false; };
+stoneImg.src = "/stone.png";
 
 // ---------- 상태 ----------
 let warmth = 0;
@@ -165,81 +174,94 @@ function lerpColor(a: string, b: string, t: number): string {
 
 function drawStone() {
   const t = warmth / 100;
-
-  // 돌 본체 색
-  const stoneColor = lerpColor("#8888A0", "#C8B090", t);
-  const indentColor = lerpColor("#606078", "#B89868", t);
   const glowColor = `rgba(255,214,165,${t * 0.4 + glowPulse * 0.1})`;
 
-  // 돌 그림자
-  ctx.save();
-  ctx.beginPath();
-  ctx.ellipse(cx, cy + stoneH * 0.48, stoneW * 0.48, stoneH * 0.12, 0, 0, Math.PI * 2);
-  ctx.fillStyle = "rgba(0,0,0,0.15)";
-  ctx.fill();
-  ctx.restore();
+  if (stoneImgLoaded) {
+    // --- 이미지 모드 ---
+    const imgAspect = stoneImg.width / stoneImg.height;
+    const drawW = stoneW;
+    const drawH = drawW / imgAspect;
+    const imgX = cx - drawW / 2;
+    const imgY = cy - drawH / 2;
 
-  // 돌 본체 (타원)
-  ctx.save();
-  ctx.beginPath();
-  ctx.ellipse(cx, cy, stoneW * 0.5, stoneH * 0.5, 0, 0, Math.PI * 2);
-  const stoneGrad = ctx.createRadialGradient(cx - stoneW * 0.15, cy - stoneH * 0.15, 0, cx, cy, stoneW * 0.5);
-  stoneGrad.addColorStop(0, lerpColor("#A0A0B8", "#E0D0B8", t));
-  stoneGrad.addColorStop(0.6, stoneColor);
-  stoneGrad.addColorStop(1, lerpColor("#606878", "#907858", t));
-  ctx.fillStyle = stoneGrad;
-  ctx.fill();
-  ctx.restore();
+    // 그림자
+    ctx.save();
+    ctx.filter = "blur(10px)";
+    ctx.globalAlpha = 0.2;
+    ctx.drawImage(stoneImg, imgX + 2, imgY + drawH * 0.08, drawW, drawH);
+    ctx.filter = "none";
+    ctx.globalAlpha = 1;
+    ctx.restore();
 
-  // 움푹 패인 홈 (indent)
-  ctx.save();
-  ctx.beginPath();
-  ctx.ellipse(cx, cy, indentRx, indentRy, 0, 0, Math.PI * 2);
-  const indentGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, indentRx);
-  indentGrad.addColorStop(0, lerpColor("#505068", "#A08050", t));
-  indentGrad.addColorStop(0.7, indentColor);
-  indentGrad.addColorStop(1, stoneColor);
-  ctx.fillStyle = indentGrad;
-  ctx.fill();
-  ctx.restore();
+    // 돌 이미지
+    ctx.drawImage(stoneImg, imgX, imgY, drawW, drawH);
 
-  // 온기 글로우 (홈 안쪽)
-  if (t > 0.05) {
+    // 온기 글로우 오버레이
+    if (t > 0.05) {
+      ctx.save();
+      ctx.globalCompositeOperation = "screen";
+      const warmGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, drawW * 0.4);
+      warmGrad.addColorStop(0, glowColor);
+      warmGrad.addColorStop(1, "rgba(255,214,165,0)");
+      ctx.fillStyle = warmGrad;
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, drawW * 0.4, drawH * 0.4, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+  } else {
+    // --- 기본 캔버스 돌 (이미지 없을 때 폴백) ---
+    const stoneColor = lerpColor("#9E9BB0", "#D4C4A8", t);
+    const indentColor = lerpColor("#706E82", "#C0A878", t);
+
     ctx.save();
     ctx.beginPath();
-    ctx.ellipse(cx, cy, indentRx * 0.8, indentRy * 0.8, 0, 0, Math.PI * 2);
-    const warmGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, indentRx * 0.8);
-    warmGrad.addColorStop(0, glowColor);
-    warmGrad.addColorStop(1, "rgba(255,214,165,0)");
-    ctx.fillStyle = warmGrad;
+    ctx.ellipse(cx, cy + stoneH * 0.1, stoneW * 0.45, stoneH * 0.12, 0, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(0,0,0,0.15)";
+    ctx.fill();
+    ctx.restore();
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, stoneW * 0.5, stoneH * 0.5, 0, 0, Math.PI * 2);
+    const stoneGrad = ctx.createRadialGradient(cx - stoneW * 0.12, cy - stoneH * 0.12, 0, cx, cy, stoneW * 0.55);
+    stoneGrad.addColorStop(0, lerpColor("#BEBCC8", "#E8DCC8", t));
+    stoneGrad.addColorStop(0.5, stoneColor);
+    stoneGrad.addColorStop(1, lerpColor("#747288", "#9A8868", t));
+    ctx.fillStyle = stoneGrad;
+    ctx.fill();
+    ctx.restore();
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, indentRx, indentRy, 0, 0, Math.PI * 2);
+    const indentGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, indentRx);
+    indentGrad.addColorStop(0, lerpColor("#5C5A70", "#A88A58", t));
+    indentGrad.addColorStop(0.6, indentColor);
+    indentGrad.addColorStop(1, stoneColor);
+    ctx.fillStyle = indentGrad;
+    ctx.fill();
+    ctx.restore();
+
+    if (t > 0.05) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, indentRx * 0.8, indentRy * 0.8, 0, 0, Math.PI * 2);
+      const warmGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, indentRx * 0.8);
+      warmGrad.addColorStop(0, glowColor);
+      warmGrad.addColorStop(1, "rgba(255,214,165,0)");
+      ctx.fillStyle = warmGrad;
+      ctx.fill();
+      ctx.restore();
+    }
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.ellipse(cx - stoneW * 0.1, cy - stoneH * 0.2, stoneW * 0.18, stoneH * 0.07, -0.3, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255,255,255,${0.18 - t * 0.05})`;
     ctx.fill();
     ctx.restore();
   }
-
-  // 상단 하이라이트 (광택)
-  ctx.save();
-  ctx.beginPath();
-  ctx.ellipse(cx - stoneW * 0.12, cy - stoneH * 0.2, stoneW * 0.18, stoneH * 0.08, -0.3, 0, Math.PI * 2);
-  ctx.fillStyle = `rgba(255,255,255,${0.15 - t * 0.05})`;
-  ctx.fill();
-  ctx.restore();
-
-  // 작은 하이라이트
-  ctx.save();
-  ctx.beginPath();
-  ctx.ellipse(cx - stoneW * 0.08, cy - stoneH * 0.14, stoneW * 0.06, stoneH * 0.03, -0.3, 0, Math.PI * 2);
-  ctx.fillStyle = `rgba(255,255,255,${0.25 - t * 0.08})`;
-  ctx.fill();
-  ctx.restore();
-
-  // 홈 테두리 미세 그림자
-  ctx.save();
-  ctx.beginPath();
-  ctx.ellipse(cx, cy, indentRx, indentRy, 0, 0, Math.PI * 2);
-  ctx.strokeStyle = `rgba(0,0,0,${0.08 - t * 0.03})`;
-  ctx.lineWidth = 1.5;
-  ctx.stroke();
-  ctx.restore();
 }
 
 function drawStars(time: number) {
